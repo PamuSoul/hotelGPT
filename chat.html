@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT飯店詢問系統</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #585858;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: scroll;
+            border:outset rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .usermessage {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: hsl(300, 68%, 96%);
+            box-shadow: 0 2px 4px rgba(222, 88, 235, 0.1);
+        }
+
+        .usermessage .sender {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .gptmessage {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: right;
+            background-color: hsl(300, 68%, 96%);
+            box-shadow: 0 2px 4px rgba(222, 88, 235, 0.1);
+        }
+
+        .gptmessage .sender {
+            font-weight: bold;
+            margin-right: 5px;
+            
+        }
+
+        .input-area {
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            display: flex;
+        }
+
+        .input-area input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .input-area button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/api/v1/account/history" method="get">
+    <div class="chat-container">
+        <div class="usermessage">
+            <span class="sender">你:</span>
+            <span>使用者發送訊息</span>
+        </div>
+        <div class="gptmessage">
+            <span class="sender">GPT:</span>
+            <span>回答訊息</span>
+        </div>
+        </div>
+    </form>
+    <form action="/api/v1/account/chat" method="post">
+    <div class="input-area">
+        <input type="text" placeholder="輸入訊息">
+        <button>傳送</button>
+    </div>
+    </form>
+</body>
+
+</html>
