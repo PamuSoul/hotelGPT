@@ -1,0 +1,248 @@
+--
+-- PostgreSQL database cluster dump
+--
+
+-- Started on 2025-02-16 16:02:52 UTC
+
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+--
+-- Roles
+--
+
+CREATE ROLE myuser;
+ALTER ROLE myuser WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:1ako6P8c0j35LPXwdLNTPQ==$oSQqleqveN7p7v9QSwffyoZBFEwa4vTJCAlZEwqINY0=:GVNrvB37A0Vg3h6I1SpzpNuHb+Kly+TnKDcVRiwhUw0=';
+
+--
+-- User Configurations
+--
+
+
+
+
+
+
+
+
+--
+-- Databases
+--
+
+--
+-- Database "template1" dump
+--
+
+\connect template1
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.3 (Debian 17.3-1.pgdg120+1)
+-- Dumped by pg_dump version 17.2
+
+-- Started on 2025-02-16 16:02:52 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- Completed on 2025-02-16 16:02:52 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "postgres" dump
+--
+
+\connect postgres
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.3 (Debian 17.3-1.pgdg120+1)
+-- Dumped by pg_dump version 17.2
+
+-- Started on 2025-02-16 16:02:52 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- Completed on 2025-02-16 16:02:52 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "username" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.3 (Debian 17.3-1.pgdg120+1)
+-- Dumped by pg_dump version 17.2
+
+-- Started on 2025-02-16 16:02:52 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3367 (class 1262 OID 16390)
+-- Name: username; Type: DATABASE; Schema: -; Owner: myuser
+--
+
+CREATE DATABASE username WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
+
+
+ALTER DATABASE username OWNER TO myuser;
+
+\connect username
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 218 (class 1259 OID 16411)
+-- Name: users; Type: TABLE; Schema: public; Owner: myuser
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    username text NOT NULL,
+    password text NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO myuser;
+
+--
+-- TOC entry 217 (class 1259 OID 16410)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: myuser
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_id_seq OWNER TO myuser;
+
+--
+-- TOC entry 3368 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: myuser
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 3210 (class 2604 OID 16414)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: myuser
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 3361 (class 0 OID 16411)
+-- Dependencies: 218
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: myuser
+--
+
+COPY public.users (id, username, password) FROM stdin;
+1	CBA	123
+\.
+
+
+--
+-- TOC entry 3369 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: myuser
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+
+
+--
+-- TOC entry 3212 (class 2606 OID 16420)
+-- Name: users uni_users_username; Type: CONSTRAINT; Schema: public; Owner: myuser
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uni_users_username UNIQUE (username);
+
+
+--
+-- TOC entry 3214 (class 2606 OID 16418)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: myuser
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+-- Completed on 2025-02-16 16:02:52 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+-- Completed on 2025-02-16 16:02:52 UTC
+
+--
+-- PostgreSQL database cluster dump complete
+--
+
