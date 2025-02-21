@@ -13,8 +13,13 @@ function submitForm(action) {
   })
     .then((response) => response.json())
     .then((data) => {
-      document.getElementById("responseMessage").innerText = data.message;
-    })
+      if (data.message === "登入成功") {  // 確保後端回應成功
+        window.location.href = "/chat.html"; // 跳轉到儀表板頁面
+      }
+    const username = data.username; 
+      localStorage.setItem('username', username);
+    }) 
+        
     .catch((error) => {
       console.error("錯誤:", error);
     });
