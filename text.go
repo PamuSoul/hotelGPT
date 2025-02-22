@@ -35,6 +35,7 @@ func main() {
 	}))
 
 	r.POST("/api/v1/account/login", login)
+	r.GET("/api/v1/account/history", history)
 	r.POST("/api/v1/account/chat", chat)
 	r.Run(":8080")
 }
@@ -87,4 +88,51 @@ func chat(c *gin.Context) {
 		"message":    req.Message,
 		"gptmessage": req.Gptmessage,
 	})
+}
+
+type ChatHistory struct {
+	Username   string `json:"username"`
+	Message    string `json:"message"`
+	Gptmessage string `json:"gptmessage"`
+}
+
+func history(c *gin.Context) {
+	// 從前端獲取 username
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "請提供使用者名稱"})
+		return
+	}
+
+	// 查詢使用者的聊天歷史
+	sql := "SELECT message, gptmessage FROM history WHERE username = $1 ORDER BY id ASC"
+	rows, err := db.Query(context.Background(), sql, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":  "無法獲取歷史訊息",
+			"detail": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	// 存儲歷史紀錄
+	var histories []ChatHistory
+	for rows.Next() {
+		var record ChatHistory
+		record.Username = username // 設定 username
+		if err := rows.Scan(&record.Message, &record.Gptmessage); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "無法解析歷史訊息"})
+			return
+		}
+		histories = append(histories, record)
+	}
+
+	// 如果沒有歷史紀錄，回傳空陣列
+	if len(histories) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "無歷史紀錄", "history": []ChatHistory{}})
+		return
+	}
+
+	// 回傳歷史訊息
+	c.JSON(http.StatusOK, gin.H{"history": histories})
 }
