@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         const chatContainer = document.querySelector(".chat-container");
 
+        chatContainer.innerHTML = "";
+
         // 遍歷伺服器回傳的歷史紀錄，並將每條訊息加到 .chat-container 中
         data.history.forEach((message) => {
         

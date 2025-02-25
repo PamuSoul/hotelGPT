@@ -1,0 +1,130 @@
+definitions:
+  main.Chatreq:
+    properties:
+      gptmessage:
+        type: string
+      message:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/account/chat:
+    post:
+      consumes:
+      - application/json
+      description: 使用者發送訊息，並接收 GPT 回覆
+      parameters:
+      - description: 使用者問題
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.Chatreq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 回應gpt 訊息
+          schema:
+            $ref: '#/definitions/main.Chatreq'
+        "400":
+          description: 無效的輸入
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 傳送聊天訊息
+      tags:
+      - Chat
+  /api/v1/account/history:
+    get:
+      description: 獲取特定使用者的聊天歷史
+      parameters:
+      - description: 使用者名稱
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功回應聊天歷史
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 請提供使用者名稱
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 取得聊天歷史紀錄
+      tags:
+      - Chat
+  /api/v1/account/login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: 使用者輸入帳號和密碼進行登入
+      parameters:
+      - description: 使用者名稱
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登入成功
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 帳號或密碼錯誤
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 使用者登入
+      tags:
+      - 帳號密碼
+  /api/v1/account/register:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: 創建一個新的使用者帳號
+      parameters:
+      - description: 使用者名稱
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 創建帳號成功
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 無法創建帳號
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 註冊新帳號
+      tags:
+      - 帳號密碼
+swagger: "2.0"
