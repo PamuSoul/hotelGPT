@@ -19,8 +19,8 @@ function submitForm(action) {
       if (data.message === "創建帳號成功"){
         alert("創建成功")
       }
-    const username = data.username; 
-      localStorage.setItem('username', username);
+    const token = data.token; 
+      localStorage.setItem('token', token);
     }) 
         
     .catch((error) => {

@@ -8,12 +8,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	_ "myprojectname/docs"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -72,10 +74,48 @@ func login(c *gin.Context) {
 		return
 	}
 	if storedPassword == password {
-		c.JSON(http.StatusOK, gin.H{"message": "登入成功", "username": username, "token": "AAA"})
+		// 生成 JWT 令牌
+		token, err := generateJWT(username)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "生成令牌失敗"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "登入成功", "username": username, "token": token})
 	} else {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "帳號或密碼錯誤"})
 	}
+}
+
+var jwtSecret = []byte("your-secret-key")
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
+
+func generateJWT(username string) (string, error) {
+	claims := Claims{
+		Username: username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(), // 令牌有效期為 72 小時
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
+}
+
+func parseJWT(tokenString string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, jwt.ErrSignatureInvalid
+	}
+	return claims, nil
 }
 
 // register API
@@ -247,14 +287,33 @@ type ChatHistory struct {
 // @Summary 取得聊天歷史紀錄
 // @Description 獲取特定使用者的聊天歷史
 // @Tags Chat
+// @Accept json
 // @Produce json
-// @Param username query string true "使用者名稱"
+// @Param Authorization header string true "Bearer Token"
 // @Success 200 {object} map[string]interface{} "成功回應聊天歷史"
-// @Failure 400 {object} map[string]interface{} "請提供使用者名稱"
+// @Failure 400 {object} map[string]interface{} "JWT 中缺少使用者名稱"
+// @Failure 401 {object} map[string]interface{} "無效的JWT令牌"
+// @Failure 500 {object} map[string]interface{} "無法獲取歷史訊息"
 // @Router /api/v1/account/history [get]
 func history(c *gin.Context) {
 
-	username := c.Query("username")
+	tokenString := c.GetHeader("Authorization")
+	if tokenString == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "請提供JWT令牌"})
+		return
+	}
+
+	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+
+	// 解析並驗證 JWT
+	claims, err := parseJWT(tokenString)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "無效的JWT令牌"})
+		return
+	}
+
+	// 從 JWT 中提取使用者名稱
+	username := claims.Username
 	if username == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "請提供使用者名稱"})
 		return

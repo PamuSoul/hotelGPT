@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const username = localStorage.getItem("username");
+  const token = localStorage.getItem("token");
 
-  if (username) {
-    fetch(`http://localhost:8080/api/v1/account/history?username=${username}`, {
+  if (token) {
+    fetch("http://localhost:8080/api/v1/account/history", {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`  // 將 JWT 令牌放入 Authorization 標頭
+      }
     })
       .then((response) => response.json())
       .then((data) => {

@@ -59,6 +59,9 @@ const docTemplate = `{
         "/api/v1/account/history": {
             "get": {
                 "description": "獲取特定使用者的聊天歷史",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -69,9 +72,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "使用者名稱",
-                        "name": "username",
-                        "in": "query",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -84,7 +87,21 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "請提供使用者名稱",
+                        "description": "JWT 中缺少使用者名稱",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "無效的JWT令牌",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "無法獲取歷史訊息",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
